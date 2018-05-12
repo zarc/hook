@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>hooklord</title>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<nav>
+		<div class="nav-wrapper cyan">
+			<a href="#" class="brand-logo center">hooklord</a>
+		</div>
+	</nav>
+
+<div class="row center">
+	<div class="col s12">
+		<h4>Basic information</h4>
+	</div>
+	<div class="col s12 m6 l3">
+		<p>Webhook URL</p><input type="text" id="url">
+	</div>
+	<div class="col s12 m6 l3">
+		<p>Username</p><input type="text" id="name">
+	</div>
+	<div class="col s12 m6 l3">
+		<p>Avatar url</p><input type="text" id="avatar">
+	</div>
+	<div class="col s12 m6 l3">
+		<p>Text</p><input type="text" id="content">
+	</div>
+</div>
+
+<div class="row center">
+    <div class="col s12">
+			<h4>Attachment</h4>
+		</div>
+    <div class="col s4">
+			<p>Author</p><input type="text" id="author_name">
+		</div>
+    <div class="col s4">
+			<p>Author Icon URL</p><input type="text" id="author_icon">
+		</div>
+    <div class="col s4">
+			<p>Sidebar Color</p><input type="text" id="color">
+		</div>
+</div>
+
+<div class="row center">
+	<div class="col s6">
+		<p>Title</p><input type="text" id="embed_title">
+	</div>
+	<div class="col s6">
+		<p>Content</p><input type="text" id="embed_content">
+	</div>
+	<div class="col s12">
+		<a class="waves-effect waves-light btn center" onclick="send()"><i class="material-icons left">done</i>Send</a>
+	</div>
+</div>
+
+<footer class="page-footer cyan">
+          <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="white-text">Credits</h5>
+								<style>a {color: yellow;}</style>
+                <p class="grey-text text-lighten-4">
+									<a href="https://github.com/SplitPixl">not zach</a> | JavaScript
+									<br>
+									<a href="https://github.com/AlexFlipnote">not zach either lol</a> | Web-Design
+								</p>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+            © 2016 DisHook
+            </div>
+          </div>
+</footer>
+
+<script>
+function send(){
+	if(!document.getElementById('url').value){
+		Materialize.toast("You need to provide a webhook URL.", 5000)
+	}
+	else{
+	var hookurl = document.getElementById('url').value + "/slack"
+	var msgJson
+	if(document.getElementById('author_icon').value || document.getElementById('author_name').value || document.getElementById('embed_title').value || document.getElementById('embed_content').value){
+		msgJson = {
+		 "username": document.getElementById('name').value,
+		 "icon_url": document.getElementById('avatar').value,
+		 "text": document.getElementById('content').value,
+		 "attachments":[{
+		   "author_icon": document.getElementById('author_icon').value,
+		   "author_name": document.getElementById('author_name').value,
+		   "color": document.getElementById('color').value,
+		   "fields": [{
+		    "title": document.getElementById('embed_title').value,
+		    "value": document.getElementById('embed_content').value,
+		   }]
+		  }]
+		}
+	}
+	else{
+		msgJson = {
+		  "username": document.getElementById('name').value,
+		  "icon_url": document.getElementById('avatar').value,
+		  "text": document.getElementById('content').value
+		}
+	}
+  post(hookurl, msgJson);
+}
+}
+</script>
+
+<!--
+<script>
+function post(url, jsonmsg){
+var data = JSON.stringify(jsonmsg);
+$.ajax({
+    type: 'POST',
+    url: url,
+    crossDomain: true,
+    data: data,
+    success: function(responseData, textStatus, jqXHR) {
+        alert(responseData);
+    },
+    error: function (responseData, textStatus, errorThrown) {
+        alert('POST failed.\n\nError:' + errorThrown);
+    }
+});
+}
+</script>
+-->
+
+<script>
+function post(url, jsonmsg){
+	xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json");
+	var data = JSON.stringify(jsonmsg);
+	xhr.send(data);
+	xhr.onreadystatechange = function() {
+		if(this.status != 200){
+			Materialize.toast('Error, Discord returned\n'+ this.status + " " + this.responseText, 5000);
+		}
+	}
+}
+</script>
+
+
+
+</body>
+</html>
